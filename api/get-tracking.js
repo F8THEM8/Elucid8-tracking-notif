@@ -2,6 +2,9 @@ import fetchOrderData from "../utils/shopify.js";
 import fetchTrackingDetails from "../utils/shippo.js";
 
 export default async (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+
   if (req.method !== "POST") {
     return res.status(405).send({ error: "Method not allowed" });
   }
