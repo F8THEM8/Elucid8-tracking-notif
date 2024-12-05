@@ -2,7 +2,7 @@ const fetchOrderData = async (orderNumber, email) => {
   const response = await fetch(
     `https://elucid8-jewelry.com/admin/api/2024-01/orders.json?name=${orderNumber}&email=${email}`,
     {
-      method: "POST",
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
         "X-Shopify-Access-Token": process.env.SHOPIFY_ACCESS_TOKEN,
