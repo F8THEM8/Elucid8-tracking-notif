@@ -3,7 +3,7 @@ import fetchShippoTracking from "../utils/shippo";
 
 export default async function handler(req, res) {
   // Add CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "https://elucid8-jewelry.com"); // Replace with your Shopify store URL
+  res.setHeader("Access-Control-Allow-Origin", "https://7r4f3s-11.myshopify.com"); // Replace with your Shopify store URL
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
