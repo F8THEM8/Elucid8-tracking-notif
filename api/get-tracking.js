@@ -1,5 +1,5 @@
-import fetchOrderData from "../utils/shopify";
-import fetchTrackingDetails from "../utils/shippo";
+import fetchOrderData from "../utils/shopify.js";
+import fetchTrackingDetails from "../utils/shippo.js";
 
 export default async (req, res) => {
   if (req.method !== "POST") {
