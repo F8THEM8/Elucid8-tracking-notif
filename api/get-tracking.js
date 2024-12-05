@@ -1,19 +1,25 @@
 import fetchOrderData from "../utils/shopify.js";
 import fetchTrackingDetails from "../utils/shippo.js";
 
-export default async (req, res) => {
-  // Log the origin header for debugging purposes
-  console.log("Origin:", req.headers.origin);
+// Fetch with timeout
+export const fetchWithTimeout = async (url, options, timeout = 10000) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  const response = await fetch(url, { ...options, signal: controller.signal });
+  clearTimeout(timeoutId);
+  return response;
+};
 
+export default async (req, res) => {
   // Add CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "https://elucid8-jewelry.com");  // Correct domain
+  res.setHeader("Access-Control-Allow-Origin", "https://elucid8-jewelry.com");  // Correct domain for production
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  res.setHeader("Access-Control-Allow-Credentials", "true"); // Allow credentials
+  res.setHeader("Access-Control-Allow-Credentials", "true");  // Allow credentials (cookies or session)
 
   // Handle preflight request (OPTIONS)
   if (req.method === "OPTIONS") {
-    return res.status(200).end();
+    return res.status(200).end();  // Respond to OPTIONS request
   }
 
   // Handle POST request
