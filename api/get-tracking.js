@@ -2,14 +2,14 @@ import fetchOrderData from "../utils/shopify.js";
 import fetchTrackingDetails from "../utils/shippo.js";
 
 export default async (req, res) => {
-  // Set CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  // Set CORS headers to allow requests from your domain
+  res.setHeader("Access-Control-Allow-Origin", "https://elucid8-jewelry.com/");  // Replace '*' with your specific domain for better security (e.g., "https://elucid8-jewelry.com")
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  // Handle OPTIONS preflight request
+  // Handle OPTIONS preflight request (sent by browsers before POST requests)
   if (req.method === "OPTIONS") {
-    return res.status(200).end(); // Respond OK for preflight
+    return res.status(200).end(); // Respond with OK for preflight
   }
 
   // Restrict to POST method
@@ -20,7 +20,7 @@ export default async (req, res) => {
   const { orderNumber, email } = req.body;
 
   try {
-    // Fetch order details from Shopify
+    // Fetch order details from Shopify using the order number and email
     const orderData = await fetchOrderData(orderNumber, email);
     if (!orderData) {
       return res.status(404).send({ error: "Order not found." });
@@ -28,7 +28,7 @@ export default async (req, res) => {
 
     const trackingNumber = orderData.tracking_number;
 
-    // Fetch tracking details from Shippo
+    // Fetch tracking details from Shippo using the tracking number
     const trackingData = await fetchTrackingDetails(trackingNumber);
 
     res.status(200).json({
