@@ -2,9 +2,17 @@ import fetchOrderData from "../utils/shopify.js";
 import fetchTrackingDetails from "../utils/shippo.js";
 
 export default async (req, res) => {
+  // Set CORS headers
   res.setHeader("Access-Control-Allow-Origin", "*");
-res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
+  // Handle OPTIONS preflight request
+  if (req.method === "OPTIONS") {
+    return res.status(200).end(); // Respond OK for preflight
+  }
+
+  // Restrict to POST method
   if (req.method !== "POST") {
     return res.status(405).send({ error: "Method not allowed" });
   }
