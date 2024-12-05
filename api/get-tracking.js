@@ -2,10 +2,14 @@ import fetchOrderData from "../utils/shopify.js";
 import fetchTrackingDetails from "../utils/shippo.js";
 
 export default async (req, res) => {
+  // Log the origin header for debugging purposes
+  console.log("Origin:", req.headers.origin);
+
   // Add CORS headers
   res.setHeader("Access-Control-Allow-Origin", "https://elucid8-jewelry.com");  // Correct domain
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Credentials", "true"); // Allow credentials
 
   // Handle preflight request (OPTIONS)
   if (req.method === "OPTIONS") {
