@@ -6,7 +6,7 @@ export default async (req, res) => {
   console.log("Origin:", req.headers.origin);
 
   // Add CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "https://elucid8-jewelry.com");  // Correct domain
+  res.setHeader("Access-Control-Allow-Origin", "https://7r4f3s-11.myshopify.com");  // Correct domain
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Access-Control-Allow-Credentials", "true"); // Allow credentials
