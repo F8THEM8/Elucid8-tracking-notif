@@ -1,9 +1,0 @@
-{
-  "name": "elucid8-tracking",
-  "version": "1.0.0",
-  "type": "module",
-  "main": "api/get-tracking.js",
-  "scripts": {
-    "start": "node api/get-tracking.js"
-  }
-}
