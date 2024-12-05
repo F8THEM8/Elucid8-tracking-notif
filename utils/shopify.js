@@ -1,6 +1,6 @@
 const fetchOrderData = async (orderNumber, email) => {
   const response = await fetch(
-    `https://7r4f3s-11.myshopify.com/admin/api/2024-01/orders.json?name=${orderNumber}&email=${email}`,
+    `https://elucid8-jewelry.com/admin/api/2024-01/orders.json?name=${orderNumber}&email=${email}`,
     {
       method: "GET",
       headers: {
