@@ -39,6 +39,10 @@ export default async (req, res) => {
       if (!orderData) {
         return res.status(404).send({ error: "Order not found." });
       }
+      } catch (error) {
+  console.error("Error fetching data:", error);
+  res.status(500).send({ error: "Internal server error. Please try again later." });
+}
 
       const trackingNumber = orderData.tracking_number;
       const trackingData = await fetchWithTimeoutAndRetry(`https://api.goshippo.com/tracks/${trackingNumber}`, {
