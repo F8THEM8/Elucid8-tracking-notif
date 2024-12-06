@@ -3,13 +3,19 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
+    "build": "echo 'No build step defined'", 
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Order tracking and notifications for Elucid8 using Shopify and Shippo.",
   "dependencies": {
-    "@shopify/shopify-api": "^11.6.1"
+    "@shopify/shopify-api": "^11.6.1",
+    "node-fetch": "^3.3.1" // Ensure node-fetch is installed
+  },
+  "engines": {
+    "node": ">=16.0.0" // Ensure compatibility with Vercel Node.js version
   }
 }
