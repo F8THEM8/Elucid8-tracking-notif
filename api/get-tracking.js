@@ -41,7 +41,7 @@ module.exports = async (req, res) => {
       }
 
       const trackingNumber = orderData.tracking_number;
-      const trackingData = await fetchWithTimeoutAndRetry(`https://api.shippo.com/track/${trackingNumber}`, {
+      const trackingData = await fetchWithTimeoutAndRetry(`https://api.goshippo.com/tracks/${trackingNumber}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
       });
