@@ -1,63 +1,52 @@
-const { GraphqlClient } = require('@shopify/shopify-api');
-
 const fetchOrderData = async (orderNumber, email) => {
-  const queryString = `
-    query($orderNumber: String!, $email: String!) {
-      orders(first: 1, query: "name:${orderNumber} AND email:${email}") {
+  const query = `
+    {
+      orders(first: 1, query: "name:${orderNumber} email:${email}") {
         edges {
           node {
             id
             name
             email
-            displayFulfillmentStatus
-            fulfillments(first: 1) {
-              trackingInfo {
-                number
-              }
-            }
+            fulfillmentStatus
+            trackingCompany
+            trackingNumbers
           }
         }
       }
     }
   `;
-
+  
   try {
-    // Initialize the Shopify GraphQL client with environment variable for SHOPIFY_SHOP_NAME
-    const client = new GraphqlClient({
-      domain: process.env.SHOPIFY_SHOP_NAME, // Access environment variable
-      accessToken: process.env.SHOPIFY_ACCESS_TOKEN, // Access environment variable
-    });
-
-    // Execute the query
-    const response = await client.query({
-      data: {
-        query: queryString,
-        variables: { orderNumber, email },
+    const response = await fetch(`https://${process.env.SHOPIFY_SHOP_NAME}/admin/api/2024-04/graphql.json`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Access-Token": process.env.SHOPIFY_ACCESS_TOKEN,
       },
+      body: JSON.stringify({ query }),
     });
 
-    const orders = response.body.data.orders.edges;
-
-    // If no order found
-    if (!orders.length) {
-      return null;
+    const data = await response.json();
+    console.log("Shopify API Response:", data);
+    
+    if (data.errors) {
+      throw new Error(`Shopify API Error: ${JSON.stringify(data.errors)}`);
     }
 
-    // Extract order details
-    const order = orders[0].node;
-    const trackingInfo = order.fulfillments[0]?.trackingInfo || [];
-    const trackingNumber = trackingInfo.length ? trackingInfo[0].number : null;
+    const orders = data.data.orders.edges;
+    if (orders.length === 0) {
+      throw new Error("No orders found for the provided details.");
+    }
 
+    const order = orders[0].node;
     return {
       orderName: order.name,
       email: order.email,
-      trackingNumber,
-      fulfillmentStatus: order.displayFulfillmentStatus,
+      fulfillmentStatus: order.fulfillmentStatus,
+      trackingNumber: order.trackingNumbers[0] || "N/A", // Handle case where no tracking number is available
     };
   } catch (error) {
-    console.error('Error fetching order data:', error);
-    throw new Error('Failed to fetch order data from Shopify.');
+    console.error("Error fetching Shopify order:", error);
+    return null;
   }
 };
-
-module.exports = fetchOrderData;
