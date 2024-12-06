@@ -9,7 +9,7 @@ const fetchTrackingDetails = async (trackingNumber) => {
     const response = await fetch("https://api.goshippo.com/tracks/", {
       method: "POST",
       headers: {
-        Authorization: `ShippoToken ${process.env.SHIPPO_API_KEY}`,
+        Authorization: `ShippoToken ${process.env.SHIPPO_API_KEY}`, // Access environment variable
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
