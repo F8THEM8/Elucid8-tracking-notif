@@ -1,4 +1,5 @@
-"name": "elucid8-tracking-notif",
+{
+  "name": "elucid8-tracking-notif",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -11,5 +12,4 @@
   "dependencies": {
     "@shopify/shopify-api": "^11.6.1"
   }
-
-
+}
