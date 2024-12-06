@@ -20,7 +20,7 @@ const fetchWithTimeoutAndRetry = async (url, options, timeout = 20000, retries =
 };
 
 module.exports = async (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "https://elucid8-jewelry.com");
+  res.setHeader("Access-Control-Allow-Origin", "https://7r4f3s-11.myshopify.com");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Access-Control-Allow-Credentials", "true");
