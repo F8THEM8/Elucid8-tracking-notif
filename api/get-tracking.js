@@ -1,8 +1,8 @@
-import fetchOrderData from "../utils/shopify.js";
-import fetchTrackingDetails from "../utils/shippo.js";
+const fetchOrderData = require("../utils/shopify.js");
+const fetchTrackingDetails = require("../utils/shippo.js");
 
 // Fetch with timeout and retry logic
-export const fetchWithTimeoutAndRetry = async (url, options, timeout = 20000, retries = 3) => {
+const fetchWithTimeoutAndRetry = async (url, options, timeout = 20000, retries = 3) => {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -19,7 +19,7 @@ export const fetchWithTimeoutAndRetry = async (url, options, timeout = 20000, re
   }
 };
 
-export default async (req, res) => {
+module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "https://elucid8-jewelry.com");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -39,13 +39,9 @@ export default async (req, res) => {
       if (!orderData) {
         return res.status(404).send({ error: "Order not found." });
       }
-      } catch (error) {
-  console.error("Error fetching data:", error);
-  res.status(500).send({ error: "Internal server error. Please try again later." });
-}
 
       const trackingNumber = orderData.tracking_number;
-      const trackingData = await fetchWithTimeoutAndRetry(`https://api.goshippo.com/tracks/${trackingNumber}`, {
+      const trackingData = await fetchWithTimeoutAndRetry(`https://api.shippo.com/track/${trackingNumber}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
       });
