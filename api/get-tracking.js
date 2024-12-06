@@ -12,9 +12,9 @@ export const fetchWithTimeout = async (url, options, timeout = 10000) => {
 
 export default async (req, res) => {
   // Add CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "https://elucid8-jewelry.com");  // Correct domain for production
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Origin", "https://elucid8-jewelry.com");  // Restrict to your frontend domain
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");  // Allow POST and OPTIONS methods
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");  // Allow only Content-Type header
   res.setHeader("Access-Control-Allow-Credentials", "true");  // Allow credentials (cookies or session)
 
   // Handle preflight request (OPTIONS)
