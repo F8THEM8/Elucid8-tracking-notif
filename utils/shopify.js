@@ -22,11 +22,13 @@ const fetchOrderData = async (orderNumber, email) => {
   `;
 
   try {
+    // Initialize the Shopify GraphQL client with environment variable for SHOPIFY_SHOP_NAME
     const client = new GraphqlClient({
-      domain: process.env.SHOPIFY_SHOP_NAME, // Use the environment variable
-      accessToken: process.env.SHOPIFY_ACCESS_TOKEN, // Use the environment variable
+      domain: process.env.SHOPIFY_SHOP_NAME, // Access environment variable
+      accessToken: process.env.SHOPIFY_ACCESS_TOKEN, // Access environment variable
     });
 
+    // Execute the query
     const response = await client.query({
       data: {
         query: queryString,
@@ -36,10 +38,12 @@ const fetchOrderData = async (orderNumber, email) => {
 
     const orders = response.body.data.orders.edges;
 
+    // If no order found
     if (!orders.length) {
       return null;
     }
 
+    // Extract order details
     const order = orders[0].node;
     const trackingInfo = order.fulfillments[0]?.trackingInfo || [];
     const trackingNumber = trackingInfo.length ? trackingInfo[0].number : null;
