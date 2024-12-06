@@ -25,17 +25,19 @@ const fetchOrderData = async (orderNumber, email) => {
       },
       body: JSON.stringify({ query }),
     });
-
+    
     const data = await response.json();
-    console.log("Shopify API Response:", data);
+    console.log("Shopify API Response:", data);  // Enhanced logging here
     
     if (data.errors) {
+      console.error("Shopify API Errors:", data.errors);
       throw new Error(`Shopify API Error: ${JSON.stringify(data.errors)}`);
     }
 
     const orders = data.data.orders.edges;
     if (orders.length === 0) {
-      throw new Error("No orders found for the provided details.");
+      console.log("No orders found for the provided details");
+      return null;
     }
 
     const order = orders[0].node;
