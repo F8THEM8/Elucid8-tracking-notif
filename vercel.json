@@ -1,7 +1,27 @@
 {
+  "version": 2,
   "functions": {
     "api/get-tracking.js": {
       "maxDuration": 30
     }
+  },
+  "builds": [
+    {
+      "src": "api/get-tracking.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "utils/shopify.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "utils/shippo.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "env": {
+    "SHOPIFY_ACCESS_TOKEN": "@shopify-access-token",
+    "SHIPPO_API_KEY": "@shippo-api-key",
+    "SHOPIFY_SHOP_NAME": "@shopify-shop-name"
   }
 }
