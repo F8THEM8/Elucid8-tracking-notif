@@ -20,7 +20,13 @@ const fetchWithTimeoutAndRetry = async (url, options, timeout = 20000, retries =
 };
 
 module.exports = async (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "https://7r4f3s-11.myshopify.com");
+  const allowedOrigins = ["https://7r4f3s-11.myshopify.com", "https://elucid8-jewelry.com"];
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Access-Control-Allow-Credentials", "true");
@@ -42,8 +48,8 @@ module.exports = async (req, res) => {
 
       const trackingNumber = orderData.tracking_number;
       const trackingData = await fetchWithTimeoutAndRetry(`https://api.goshippo.com/tracks/${trackingNumber}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
       });
 
       res.status(200).json({
