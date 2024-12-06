@@ -13,7 +13,7 @@ export const fetchWithTimeout = async (url, options, timeout = 10000) => {
 // CORS middleware
 const cors = (req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "https://elucid8-jewelry.com");  // Adjust this domain for production
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Access-Control-Allow-Credentials", "true");  // Allow credentials like cookies or session
 
@@ -27,7 +27,9 @@ const cors = (req, res, next) => {
 
 export default async (req, res) => {
   cors(req, res, async () => {
-    if (req.method === "POST") {
+    if (req.method === "GET") {
+      res.status(200).send({ message: "GET request received. Please use POST to submit data." });
+    } else if (req.method === "POST") {
       const { orderNumber, email } = req.body;
 
       try {
