@@ -1,51 +1,59 @@
+const { GraphqlClient } = require('@shopify/shopify-api');
+
 const fetchOrderData = async (orderNumber, email) => {
-  // Helper function to add a delay for retries
-  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-  let attempt = 0;
-  const maxAttempts = 3;
-  let orderData = null;
-
-  // Retry logic in case of failure
-  while (attempt < maxAttempts) {
-    const response = await fetch(
-      `https://7r4f3s-11.myshopify.com/admin/api/2024-01/orders.json?name=${orderNumber}&email=${email}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Shopify-Access-Token": process.env.SHOPIFY_ACCESS_TOKEN,
-        },
+  const queryString = `
+    query($orderNumber: String!, $email: String!) {
+      orders(first: 1, query: "name:${orderNumber} AND email:${email}") {
+        edges {
+          node {
+            id
+            name
+            email
+            displayFulfillmentStatus
+            fulfillments(first: 1) {
+              trackingInfo {
+                number
+              }
+            }
+          }
+        }
       }
-    );
-
-    // Log the full response for debugging purposes
-    const responseText = await response.text();
-    console.log("Shopify API Response:", responseText);
-
-    // If the request was successful, break out of the loop
-    if (response.ok) {
-      const data = JSON.parse(responseText);
-      console.log("Shopify Order Data:", data);  // Log the order data for debugging
-
-      const { orders } = data;
-      orderData = orders.length > 0 ? orders[0] : null;
-      if (orderData) {
-        break;  // Order found, exit the loop
-      }
-    } else {
-      console.error(`Attempt ${attempt + 1} failed. Status: ${response.status}, Response: ${responseText}`);
-      attempt++;
-      await delay(1000);  // Retry after 1 second
     }
-  }
+  `;
 
-  if (!orderData) {
-    console.error(`Order not found after ${maxAttempts} attempts.`);
-    return null;  // Return null if no order found
-  }
+  try {
+    const client = new GraphqlClient({
+      domain: process.env.SHOPIFY_SHOP_NAME, // Use the environment variable
+      accessToken: process.env.SHOPIFY_ACCESS_TOKEN, // Use the environment variable
+    });
 
-  return orderData;
+    const response = await client.query({
+      data: {
+        query: queryString,
+        variables: { orderNumber, email },
+      },
+    });
+
+    const orders = response.body.data.orders.edges;
+
+    if (!orders.length) {
+      return null;
+    }
+
+    const order = orders[0].node;
+    const trackingInfo = order.fulfillments[0]?.trackingInfo || [];
+    const trackingNumber = trackingInfo.length ? trackingInfo[0].number : null;
+
+    return {
+      orderName: order.name,
+      email: order.email,
+      trackingNumber,
+      fulfillmentStatus: order.displayFulfillmentStatus,
+    };
+  } catch (error) {
+    console.error('Error fetching order data:', error);
+    throw new Error('Failed to fetch order data from Shopify.');
+  }
 };
 
 module.exports = fetchOrderData;
