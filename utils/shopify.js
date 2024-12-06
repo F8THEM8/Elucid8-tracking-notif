@@ -48,4 +48,4 @@ const fetchOrderData = async (orderNumber, email) => {
   return orderData;
 };
 
-export default fetchOrderData;
+module.exports = fetchOrderData;
