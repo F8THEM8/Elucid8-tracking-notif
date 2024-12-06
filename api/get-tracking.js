@@ -10,8 +10,8 @@ export const fetchWithTimeout = async (url, options, timeout = 10000) => {
   return response;
 };
 
-export default async (req, res) => {
-  // Add CORS headers to allow your frontend domain (elucid8-jewelry.com)
+// CORS middleware
+const cors = (req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "https://elucid8-jewelry.com");  // Adjust this domain for production
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -22,28 +22,33 @@ export default async (req, res) => {
     return res.status(200).end();  // Respond to OPTIONS request for preflight check
   }
 
-  // Handle POST request
-  if (req.method === "POST") {
-    const { orderNumber, email } = req.body;
+  next();
+};
 
-    try {
-      const orderData = await fetchOrderData(orderNumber, email);
-      if (!orderData) {
-        return res.status(404).send({ error: "Order not found." });
+export default async (req, res) => {
+  cors(req, res, async () => {
+    if (req.method === "POST") {
+      const { orderNumber, email } = req.body;
+
+      try {
+        const orderData = await fetchOrderData(orderNumber, email);
+        if (!orderData) {
+          return res.status(404).send({ error: "Order not found." });
+        }
+
+        const trackingNumber = orderData.tracking_number;
+        const trackingData = await fetchTrackingDetails(trackingNumber);
+
+        res.status(200).json({
+          trackingNumber,
+          status: trackingData.tracking_status.status,
+        });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        res.status(500).send({ error: "Internal server error. Please try again later." });
       }
-
-      const trackingNumber = orderData.tracking_number;
-      const trackingData = await fetchTrackingDetails(trackingNumber);
-
-      res.status(200).json({
-        trackingNumber,
-        status: trackingData.tracking_status.status,
-      });
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      res.status(500).send({ error: "Internal server error. Please try again later." });
+    } else {
+      res.status(405).send({ error: "Method not allowed" });
     }
-  } else {
-    res.status(405).send({ error: "Method not allowed" });
-  }
+  });
 };
