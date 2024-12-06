@@ -1,32 +1,9 @@
 const fetchOrderData = require("../utils/shopify.js");
 const fetchTrackingDetails = require("../utils/shippo.js");
 
-// Fetch with timeout and retry logic
-const fetchWithTimeoutAndRetry = async (url, options, timeout = 20000, retries = 3) => {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-  for (let i = 0; i < retries; i++) {
-    try {
-      const response = await fetch(url, { ...options, signal: controller.signal });
-      clearTimeout(timeoutId);
-      if (response.ok) {
-        return response;
-      }
-    } catch (error) {
-      if (i === retries - 1) throw error;
-    }
-  }
-};
-
 module.exports = async (req, res) => {
-  const allowedOrigins = ["https://7r4f3s-11.myshopify.com", "https://elucid8-jewelry.com"];
-  const origin = req.headers.origin;
-
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  }
-
+  // Set headers for CORS
+  res.setHeader("Access-Control-Allow-Origin", "https://elucid8-jewelry.com");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Access-Control-Allow-Credentials", "true");
@@ -35,26 +12,25 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
 
-  if (req.method === "GET") {
-    res.status(200).send({ message: "GET request received. Please use POST to submit data." });
-  } else if (req.method === "POST") {
+  if (req.method === "POST") {
     const { orderNumber, email } = req.body;
 
     try {
       const orderData = await fetchOrderData(orderNumber, email);
+
       if (!orderData) {
         return res.status(404).send({ error: "Order not found." });
       }
 
-      const trackingNumber = orderData.tracking_number;
-      const trackingData = await fetchWithTimeoutAndRetry(`https://api.goshippo.com/tracks/${trackingNumber}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
+      const trackingNumber = orderData.trackingNumber;
+      const trackingData = await fetchTrackingDetails(trackingNumber);
 
       res.status(200).json({
+        orderNumber: orderData.orderName,
+        email: orderData.email,
+        fulfillmentStatus: orderData.fulfillmentStatus,
         trackingNumber,
-        status: trackingData.tracking_status.status,
+        trackingStatus: trackingData.tracking_status.status,
       });
     } catch (error) {
       console.error("Error fetching data:", error);
